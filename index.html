@@ -7,6 +7,22 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* Disable text selection across the page */
+    body {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Re-enable selection only inside form inputs */
+    input, select, textarea {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
                    'Helvetica Neue', Arial, sans-serif;
@@ -548,6 +564,53 @@
   companyInput.addEventListener('input', function () {
     clearFieldError(this, 'errCompany');
   });
+
+  // ── SECURITY ───────────────────────────────────────────────────────────────
+
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
+
+  // Disable copy, cut, paste globally (not inside input fields)
+  ['copy', 'cut', 'paste'].forEach(function (evt) {
+    document.addEventListener(evt, function (e) {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+        e.preventDefault();
+      }
+    });
+  });
+
+  // Block keyboard shortcuts: F12, Ctrl+Shift+I/J/C/U, Ctrl+U, Ctrl+S
+  document.addEventListener('keydown', function (e) {
+    const key = e.key;
+    const ctrl = e.ctrlKey || e.metaKey;
+    const shift = e.shiftKey;
+
+    if (
+      key === 'F12' ||
+      (ctrl && shift && ['I', 'J', 'C', 'i', 'j', 'c'].includes(key)) ||
+      (ctrl && ['U', 'u', 'S', 's'].includes(key))
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  });
+
+  // DevTools detection — redirect/blank the page if opened
+  (function () {
+    const threshold = 160;
+    function detectDevTools() {
+      const widthDiff  = window.outerWidth  - window.innerWidth;
+      const heightDiff = window.outerHeight - window.innerHeight;
+      if (widthDiff > threshold || heightDiff > threshold) {
+        document.body.innerHTML = '';
+        document.title = '';
+      }
+    }
+    setInterval(detectDevTools, 1000);
+  })();
 </script>
 
 </body>
