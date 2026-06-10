@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exhibitor Registration</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                   'Helvetica Neue', Arial, sans-serif;
+      background: #f2f2f2;
+      color: #1e1e1e;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ─────────────────────────────────── */
+    .page-wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ── Page Header ─────────────────────────────── */
+    .page-header {
+      text-align: center;
+      padding: 12px 0 28px;
+    }
+
+    .page-header .event-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #888;
+      border: 1px solid #d4d4d4;
+      border-radius: 3px;
+      padding: 3px 10px;
+      margin-bottom: 14px;
+    }
+
+    .page-header h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.4px;
+      line-height: 1.2;
+    }
+
+    .page-header p {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      color: #777;
+    }
+
+    /* ── Card ────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e2e2;
+      border-radius: 10px;
+      padding: 30px 32px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 22px 18px; }
+    }
+
+    /* ── Section Label ──────────────────────────── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #aaa;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ebebeb;
+      margin-bottom: 22px;
+    }
+
+    /* ── Field Group ────────────────────────────── */
+    .field-group {
+      margin-bottom: 18px;
+    }
+
+    .field-group:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    label .req {
+      color: #bbb;
+      font-weight: 400;
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1px solid #d4d4d4;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #1e1e1e;
+      background: #fff;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="text"]::placeholder { color: #bbb; }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #555;
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+    }
+
+    input.field-error,
+    select.field-error {
+      border-color: #b94a4a;
+      box-shadow: none;
+    }
+
+    .err-msg {
+      display: none;
+      font-size: 0.76rem;
+      color: #b94a4a;
+      margin-top: 5px;
+    }
+
+    .err-msg.show { display: block; }
+
+    /* ── Select Wrapper ─────────────────────────── */
+    .sel-wrap { position: relative; }
+
+    .sel-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #888;
+      pointer-events: none;
+    }
+
+    /* ── Co-Exhibitor Section ───────────────────── */
+    #co-ex-section { display: none; }
+
+    .co-ex-block {
+      background: #fafafa;
+      border: 1px solid #e8e8e8;
+      border-radius: 7px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+
+    .co-ex-block:last-child { margin-bottom: 0; }
+
+    .co-ex-block .block-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; gap: 0; }
+      .field-row .field-group { margin-bottom: 14px; }
+    }
+
+    /* ── Submit ─────────────────────────────────── */
+    .submit-btn {
+      width: 100%;
+      padding: 13px 20px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s;
+      margin-top: 8px;
+      letter-spacing: 0.1px;
+    }
+
+    .submit-btn:hover:not(:disabled) { background: #000; }
+
+    .submit-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* ── Spinner ─────────────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner {
+      display: none;
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Alerts ──────────────────────────────────── */
+    .alert {
+      display: none;
+      border-radius: 7px;
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin-top: 16px;
+      border: 1px solid;
+    }
+
+    .alert.show { display: block; }
+
+    .alert-success {
+      background: #f5f8f5;
+      border-color: #b2cbb2;
+      color: #2d5a2d;
+    }
+
+    .alert-error {
+      background: #fdf5f5;
+      border-color: #d4b2b2;
+      color: #6e2020;
+    }
+
+    .alert strong { display: block; margin-bottom: 2px; }
+
+    /* ── Footer ──────────────────────────────────── */
+    .page-footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #bbb;
+      margin-top: 16px;
+    }
+
+    /* ── Divider ─────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: #ebebeb;
+      margin: 22px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Exhibitor Registration</h1>
+  </div>
+
+  <!-- Form Card -->
+  <div class="card">
+    <form id="regForm" novalidate autocomplete="off">
+
+      <!-- ── Company Details ───────────────────── -->
+      <p class="section-label">Company Details</p>
+
+      <div class="field-group">
+        <label for="companyName">Company Name <span class="req">*</span></label>
+        <input
+          type="text"
+          id="companyName"
+          placeholder="Enter your company name"
+          autocomplete="organization"
+          maxlength="120"
+        />
+        <span class="err-msg" id="errCompany">Please enter the company name.</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ── Co-Exhibitor Count ────────────────── -->
+      <p class="section-label">Co-Exhibitor Count</p>
+
+      <div class="field-group">
+        <label for="numCoEx">Number of Co-Exhibitors <span class="req">*</span></label>
+        <div class="sel-wrap">
+          <select id="numCoEx">
+            <option value="">— Select —</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+          </select>
+        </div>
+        <span class="err-msg" id="errNum">Please select the number of co-exhibitors.</span>
+      </div>
+
+      <!-- ── Dynamic Co-Exhibitor Fields ──────── -->
+      <div id="co-ex-section">
+        <div class="divider"></div>
+        <p class="section-label">Co-Exhibitor Details</p>
+        <div id="co-ex-fields"></div>
+      </div>
+
+      <!-- ── Submit ────────────────────────────── -->
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="spinner" id="spinner"></span>
+        <span id="btnLabel">Submit Registration</span>
+      </button>
+
+      <!-- ── Feedback ──────────────────────────── -->
+      <div class="alert alert-success" id="alertSuccess">
+        <strong>Registration submitted successfully!</strong>
+        Thank you. Your registration has been received and will be confirmed shortly.
+      </div>
+      <div class="alert alert-error" id="alertError">
+        <strong>Submission failed.</strong>
+        Please check your connection and try again. If the problem persists, contact the organiser.
+      </div>
+
+    </form>
+  </div>
+
+
+</div><!-- /page-wrapper -->
+
+<script>
+  // ── CONFIGURATION ─────────────────────────────────────────────────────────
+  // Replace this URL with your deployed Google Apps Script Web App URL.
+  // Steps: Apps Script → Deploy → New deployment → Web app → Execute as Me
+  //        → Who has access: Anyone → Deploy → Copy the URL here.
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQKrPg4_7kEQY50rlOIe-Y4IJYN-9Fpb0T_bud5GeFEN6uTcMYgUjE_cCdVXgOmPUe/exec';
+
+  // ── DOM REFS ───────────────────────────────────────────────────────────────
+  const form         = document.getElementById('regForm');
+  const companyInput = document.getElementById('companyName');
+  const numSelect    = document.getElementById('numCoEx');
+  const coExSection  = document.getElementById('co-ex-section');
+  const coExFields   = document.getElementById('co-ex-fields');
+  const submitBtn    = document.getElementById('submitBtn');
+  const spinner      = document.getElementById('spinner');
+  const btnLabel     = document.getElementById('btnLabel');
+  const alertSuccess = document.getElementById('alertSuccess');
+  const alertError   = document.getElementById('alertError');
+
+  // ── DYNAMIC FIELD GENERATION ───────────────────────────────────────────────
+  numSelect.addEventListener('change', function () {
+    const n = parseInt(this.value, 10);
+    coExFields.innerHTML = '';
+    hideAlerts();
+    clearFieldError(numSelect, 'errNum');
+
+    if (!n) {
+      coExSection.style.display = 'none';
+      return;
+    }
+
+    coExSection.style.display = 'block';
+
+    for (let i = 1; i <= n; i++) {
+      const block = document.createElement('div');
+      block.className = 'co-ex-block';
+      block.innerHTML = `
+        <p class="block-title">Co-Exhibitor ${i}</p>
+        <div class="field-row">
+          <div class="field-group">
+            <label for="cx_name_${i}">Name <span class="req">*</span></label>
+            <input type="text" id="cx_name_${i}" placeholder="Full name" maxlength="100" />
+            <span class="err-msg" id="errName_${i}">Name is required.</span>
+          </div>
+          <div class="field-group">
+            <label for="cx_desig_${i}">Designation <span class="req">*</span></label>
+            <input type="text" id="cx_desig_${i}" placeholder="e.g. Sales Manager" maxlength="100" />
+            <span class="err-msg" id="errDesig_${i}">Designation is required.</span>
+          </div>
+        </div>
+      `;
+      coExFields.appendChild(block);
+
+      // Live-clear errors on typing
+      block.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('input', function () {
+          this.classList.remove('field-error');
+          const errEl = document.getElementById(this.id.replace('cx_name_', 'errName_').replace('cx_desig_', 'errDesig_'));
+          if (errEl) errEl.classList.remove('show');
+        });
+      });
+    }
+  });
+
+  // ── VALIDATION ─────────────────────────────────────────────────────────────
+  function validate() {
+    let ok = true;
+
+    // Company
+    if (!companyInput.value.trim()) {
+      setFieldError(companyInput, 'errCompany');
+      ok = false;
+    } else {
+      clearFieldError(companyInput, 'errCompany');
+    }
+
+    // Count
+    if (!numSelect.value) {
+      setFieldError(numSelect, 'errNum');
+      ok = false;
+    } else {
+      clearFieldError(numSelect, 'errNum');
+    }
+
+    // Co-exhibitors
+    const n = parseInt(numSelect.value, 10);
+    if (n) {
+      for (let i = 1; i <= n; i++) {
+        const nameEl  = document.getElementById(`cx_name_${i}`);
+        const desigEl = document.getElementById(`cx_desig_${i}`);
+
+        if (!nameEl.value.trim()) {
+          setFieldError(nameEl, `errName_${i}`);
+          ok = false;
+        } else {
+          clearFieldError(nameEl, `errName_${i}`);
+        }
+
+        if (!desigEl.value.trim()) {
+          setFieldError(desigEl, `errDesig_${i}`);
+          ok = false;
+        } else {
+          clearFieldError(desigEl, `errDesig_${i}`);
+        }
+      }
+    }
+
+    return ok;
+  }
+
+  function setFieldError(el, errId) {
+    el.classList.add('field-error');
+    document.getElementById(errId).classList.add('show');
+  }
+
+  function clearFieldError(el, errId) {
+    el.classList.remove('field-error');
+    document.getElementById(errId).classList.remove('show');
+  }
+
+  // ── BUILD PAYLOAD ──────────────────────────────────────────────────────────
+  function buildPayload() {
+    const n = parseInt(numSelect.value, 10);
+    const coExhibitors = [];
+    for (let i = 1; i <= n; i++) {
+      coExhibitors.push({
+        name:        document.getElementById(`cx_name_${i}`).value.trim(),
+        designation: document.getElementById(`cx_desig_${i}`).value.trim()
+      });
+    }
+    return {
+      companyName:     companyInput.value.trim(),
+      numCoExhibitors: n,
+      coExhibitors
+    };
+  }
+
+  // ── UI STATE ───────────────────────────────────────────────────────────────
+  function setLoading(on) {
+    submitBtn.disabled    = on;
+    spinner.style.display = on ? 'block' : 'none';
+    btnLabel.textContent  = on ? 'Submitting…' : 'Submit Registration';
+  }
+
+  function hideAlerts() {
+    alertSuccess.classList.remove('show');
+    alertError.classList.remove('show');
+  }
+
+  // ── FORM SUBMISSION ────────────────────────────────────────────────────────
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlerts();
+
+    if (!validate()) {
+      // Scroll first error into view smoothly
+      const firstErr = form.querySelector('.field-error');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method:   'POST',
+        redirect: 'follow',
+        headers:  { 'Content-Type': 'text/plain;charset=utf-8' },
+        body:     JSON.stringify(buildPayload())
+      });
+
+      const json = await res.json();
+
+      if (json.status === 'success') {
+        alertSuccess.classList.add('show');
+        form.reset();
+        coExSection.style.display = 'none';
+        coExFields.innerHTML = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alertError.classList.add('show');
+      }
+    } catch (_) {
+      alertError.classList.add('show');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  // Live-clear company error
+  companyInput.addEventListener('input', function () {
+    clearFieldError(this, 'errCompany');
+  });
+</script>
+
+</body>
+</html>
