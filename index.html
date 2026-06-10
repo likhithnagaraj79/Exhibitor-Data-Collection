@@ -545,10 +545,13 @@
       const json = await res.json();
 
       if (json.status === 'success') {
-        alertSuccess.classList.add('show');
-        form.reset();
-        coExSection.style.display = 'none';
-        coExFields.innerHTML = '';
+        document.querySelector('.card').innerHTML = `
+          <div style="text-align:center; padding: 40px 20px;">
+            <div style="font-size:2.2rem; margin-bottom:16px;">&#10003;</div>
+            <h2 style="font-size:1.2rem; font-weight:700; color:#1a1a1a; margin-bottom:10px;">Registration Submitted Successfully!</h2>
+            <p style="font-size:0.88rem; color:#666; line-height:1.6;">Thank you. Your registration has been received<br>and will be confirmed shortly.</p>
+          </div>
+        `;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         alertError.classList.add('show');
